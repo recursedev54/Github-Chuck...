@@ -1,0 +1,40 @@
+// Frog Level Melody with recording
+
+// Define the melody notes and durations
+[ 60, 62, 64, 65, 67, 69, 71, 72 ] @=> int melody[];
+[ 500, 500, 500, 500, 500, 500, 500, 500 ] @=> int durations[];
+
+// Create an oscillator
+SinOsc osc => dac;
+
+// Set initial gain
+0.3 => osc.gain;
+
+// Create a WvOut object to record the output
+WvOut w => dac;
+"frog_level.wav" => w.wavFilename;
+
+// Function to play the melody
+fun void playMelody()
+{
+    for (0 => int i; i < melody.size(); i++)
+    {
+        Std.mtof(melody[i]) => osc.freq; // Set frequency according to MIDI note
+        durations[i]::ms => now; // Wait for the specified duration
+    }
+}
+
+// Define tempo in BPM and calculate the duration of one bar
+110 => float tempo; // BPM
+(60000.0 / tempo) * 4 => float bar_duration; // milliseconds per bar
+
+// Calculate the duration to record in milliseconds
+69.4 * bar_duration => float record_duration;
+
+// Start recording
+record_duration::ms => now;
+
+// Stop recording and close the file
+w.closeFile();
+<<< "Recording complete and saved to frog_level.wav" >>>;
+import 
